@@ -24,27 +24,25 @@ func init() {
 	flag.StringVar(&peer, "peers", "", "peers comma separated host:port")
 	flag.BoolVar(&writer, "w", false, "this raft writes data")
 	flag.Parse()
+
+	if len(peer) < 1 {
+		panic("peers is required")
+	}
 }
 
 func main() {
 	node = MakeRaft()
-	if len(peer) > 0 {
-		for _, p := range strings.Split(peer, ",") {
-			log.Printf("add peer: %s", p)
-
-			future := node.AddPeer(p)
-			if err := future.Error(); err != nil {
-				panic(err)
-			}
-		}
+	future := node.SetPeers(strings.Split(peer, ","))
+	if err := future.Error(); err != nil {
+		panic(err)
 	}
 
 	go func() {
-		ticker := time.NewTicker(time.Second * 10)
+		ticker := time.NewTicker(time.Second * 30)
 		defer ticker.Stop()
 
 		for range ticker.C {
-			log.Printf("state:%+v stats:%+v", node.State(), node.Stats())
+			log.Printf("[%s] state:%+v stats:%+v", node, node.State(), node.Stats())
 		}
 	}()
 
