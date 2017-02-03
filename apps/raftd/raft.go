@@ -18,7 +18,8 @@ func MakeRaft(baseDir string) *raft.Raft {
 	stableStore := logStore
 
 	// create the snapshot store, which allows raft to truncate the log
-	snapshotStore, err := raft.NewFileSnapshotStore(baseDir, 3, os.Stdout)
+	snapshotStore, err := raft.NewFileSnapshotStoreWithLogger(baseDir, 3,
+		log.New(os.Stdout, color.Cyan("snap "), log.LstdFlags|log.Lshortfile))
 	if err != nil {
 		panic(err)
 	}
