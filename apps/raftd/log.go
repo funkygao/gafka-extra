@@ -37,12 +37,13 @@ func (s *logStore) LastIndex() (uint64, error) {
 // GetLog implements the LogStore interface.
 func (s *logStore) GetLog(index uint64, log *raft.Log) error {
 	glog.Printf("GetLog %d", index)
-	time.Sleep(time.Millisecond * 10)
+	time.Sleep(time.Millisecond * 100)
 	return nil
 }
 
 // StoreLog implements the LogStore interface.
 func (s *logStore) StoreLog(log *raft.Log) error {
+	glog.Printf("StoreLog")
 	return s.StoreLogs([]*raft.Log{log})
 }
 
