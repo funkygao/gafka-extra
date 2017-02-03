@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/funkygao/gafka/ctx"
+	"github.com/funkygao/golib/color"
 	"github.com/hashicorp/raft"
 )
 
@@ -44,13 +45,13 @@ func MakeRaft(baseDir string) *raft.Raft {
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("peers: %+v", peers)
+	log.Printf("existing peers: %+v", peers)
 
 	// setup the config
 	conf := raft.DefaultConfig()
 	conf.SnapshotInterval = time.Minute
 	conf.EnableSingleNode = false
-	conf.Logger = log.New(os.Stdout, "", log.LstdFlags)
+	conf.Logger = log.New(os.Stdout, color.Magenta("raft"), log.LstdFlags|log.Lshortfile)
 
 	// create the raft system
 	node, err := raft.NewRaft(conf, NewFSM(), logStore, stableStore, snapshotStore, peerStore, trans)
