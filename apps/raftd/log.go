@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	debugger "github.com/funkygao/golib/debug"
 	"github.com/hashicorp/raft"
 )
 
@@ -26,30 +27,34 @@ func NewStore() *logStore {
 
 // FirstIndex implements the LogStore interface.
 func (s *logStore) FirstIndex() (uint64, error) {
+	glog.Printf("FirstIndex %+v", debugger.Callstack(2))
+
 	return s.firstIndex, nil
 }
 
 // LastIndex implements the LogStore interface.
 func (s *logStore) LastIndex() (uint64, error) {
+	glog.Printf("LastIndex %+v", debugger.Callstack(2))
+
 	return s.lastIndex, nil
 }
 
 // GetLog implements the LogStore interface.
 func (s *logStore) GetLog(index uint64, log *raft.Log) error {
-	glog.Printf("GetLog %d", index)
+	glog.Printf("GetLog %d %+v", index, debugger.Callstack(2))
 	time.Sleep(time.Millisecond * 100)
 	return nil
 }
 
 // StoreLog implements the LogStore interface.
 func (s *logStore) StoreLog(log *raft.Log) error {
-	glog.Printf("StoreLog")
+	glog.Printf("StoreLog %+v", debugger.Callstack(2))
 	return s.StoreLogs([]*raft.Log{log})
 }
 
 // StoreLogs implements the LogStore interface.
 func (s *logStore) StoreLogs(logs []*raft.Log) error {
-	glog.Println(len(logs))
+	glog.Println(len(logs), debugger.Callstack(2))
 
 	s.Lock()
 	defer s.Unlock()
@@ -70,7 +75,7 @@ func (s *logStore) StoreLogs(logs []*raft.Log) error {
 
 // DeleteRange implements the LogStore interface.
 func (s *logStore) DeleteRange(min, max uint64) error {
-	glog.Printf("DeleteRange %d-%d", min, max)
+	glog.Printf("DeleteRange %d-%d %+v", min, max, debugger.Callstack(2))
 
 	s.Lock()
 	defer s.Unlock()
@@ -85,13 +90,13 @@ func (s *logStore) DeleteRange(min, max uint64) error {
 
 // Set implements the StableStore interface.
 func (s *logStore) Get(key []byte) ([]byte, error) {
-	glog.Printf("Get %s", string(key))
+	glog.Printf("Get %s %+v", string(key), debugger.Callstack(2))
 	return nil, nil
 }
 
 // GetUint64 implements the StableStore interface.
 func (s *logStore) GetUint64(key []byte) (uint64, error) {
-	glog.Printf("GetUint64 %s", string(key))
+	glog.Printf("GetUint64 %s %+v", string(key), debugger.Callstack(2))
 	// e,g.
 	// GetUint64 CurrentTerm
 
@@ -100,7 +105,7 @@ func (s *logStore) GetUint64(key []byte) (uint64, error) {
 
 // Set implements the StableStore interface.
 func (s *logStore) Set(key, val []byte) error {
-	glog.Printf("Set %s:%s", string(key), string(val))
+	glog.Printf("Set %s:%s %+v", string(key), string(val), debugger.Callstack(2))
 	// e,g.
 	// Set LastVoteCand:10.1.1.1:10114
 
@@ -109,7 +114,7 @@ func (s *logStore) Set(key, val []byte) error {
 
 // SetUint64 implements the StableStore interface.
 func (s *logStore) SetUint64(key []byte, val uint64) error {
-	glog.Printf("SetUint64 %s:%d", string(key), val)
+	glog.Printf("SetUint64 %s=%d %+v", string(key), val, debugger.Callstack(2))
 	// e,g.
 	// SetUint64 CurrentTerm:1
 	// SetUint64 LastVoteTerm:1
