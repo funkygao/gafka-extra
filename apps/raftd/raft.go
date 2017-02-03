@@ -14,7 +14,8 @@ import (
 
 func MakeRaft(baseDir string) *raft.Raft {
 	// create the log store and stable store
-	logStore := raft.NewInmemStore()
+	//logStore := raft.NewInmemStore()
+	logStore := NewStore()
 	stableStore := logStore
 
 	// create the snapshot store, which allows raft to truncate the log

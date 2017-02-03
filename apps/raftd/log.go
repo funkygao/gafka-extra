@@ -46,12 +46,12 @@ func (s *logStore) StoreLog(log *raft.Log) error {
 
 // StoreLogs implements the LogStore interface.
 func (s *logStore) StoreLogs(logs []*raft.Log) error {
-	glog.Printf("StoreLogs %+v", logs)
-
 	s.Lock()
 	defer s.Unlock()
 
 	for _, l := range logs {
+		glog.Printf("StoreLogs %+v", l)
+
 		if s.firstIndex == 0 {
 			s.firstIndex = l.Index
 		}
@@ -65,7 +65,7 @@ func (s *logStore) StoreLogs(logs []*raft.Log) error {
 
 // DeleteRange implements the LogStore interface.
 func (s *logStore) DeleteRange(min, max uint64) error {
-	glog.Printf("DeleteRange %d=%d", min, max)
+	glog.Printf("DeleteRange %d-%d", min, max)
 
 	s.Lock()
 	defer s.Unlock()
@@ -87,16 +87,27 @@ func (s *logStore) Get(key []byte) ([]byte, error) {
 // GetUint64 implements the StableStore interface.
 func (s *logStore) GetUint64(key []byte) (uint64, error) {
 	glog.Printf("GetUint64 %s", string(key))
+	// e,g.
+	// GetUint64 CurrentTerm
+
 	return 0, nil
 }
 
+// Set implements the StableStore interface.
 func (s *logStore) Set(key, val []byte) error {
 	glog.Printf("Set %s:%s", string(key), string(val))
+	// e,g.
+	// Set LastVoteCand:10.1.1.1:10114
+
 	return nil
 }
 
 // SetUint64 implements the StableStore interface.
 func (s *logStore) SetUint64(key []byte, val uint64) error {
 	glog.Printf("SetUint64 %s:%d", string(key), val)
+	// e,g.
+	// SetUint64 CurrentTerm:1
+	// SetUint64 LastVoteTerm:1
+
 	return nil
 }
