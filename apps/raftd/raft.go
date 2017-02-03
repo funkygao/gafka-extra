@@ -31,7 +31,8 @@ func MakeRaft(baseDir string) *raft.Raft {
 		panic(err)
 	}
 	maxPool := 3
-	trans, err := raft.NewTCPTransport(raftBindAddr, advertiseAddr, maxPool, 4*time.Second, os.Stdout)
+	trans, err := raft.NewTCPTransportWithLogger(raftBindAddr, advertiseAddr, maxPool, 4*time.Second,
+		log.New(os.Stdout, color.Yellow("tran "), log.LstdFlags|log.Lshortfile))
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +52,7 @@ func MakeRaft(baseDir string) *raft.Raft {
 	conf := raft.DefaultConfig()
 	conf.SnapshotInterval = time.Minute
 	conf.EnableSingleNode = false
-	conf.Logger = log.New(os.Stdout, color.Magenta("raft"), log.LstdFlags|log.Lshortfile)
+	conf.Logger = log.New(os.Stdout, color.Magenta("raft "), log.LstdFlags|log.Lshortfile)
 
 	// create the raft system
 	node, err := raft.NewRaft(conf, NewFSM(), logStore, stableStore, snapshotStore, peerStore, trans)
