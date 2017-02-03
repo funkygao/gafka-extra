@@ -19,6 +19,12 @@ type MockFSM struct {
 	logs [][]byte
 }
 
+func NewFSM() raft.FSM {
+	return &MockFSM{
+		logs: make([][]byte, 0),
+	}
+}
+
 func (fsm *MockFSM) Apply(l *raft.Log) interface{} {
 	if debug {
 		log.Printf("apply %+v", l)
@@ -28,7 +34,7 @@ func (fsm *MockFSM) Apply(l *raft.Log) interface{} {
 	defer fsm.Unlock()
 
 	fsm.logs = append(fsm.logs, l.Data)
-	return len(fsm.logs)
+	return nil
 }
 
 func (fsm *MockFSM) Snapshot() (raft.FSMSnapshot, error) {
@@ -66,13 +72,21 @@ func (snap *MockSnapshot) Persist(sink raft.SnapshotSink) error {
 		log.Printf("persist %#v", sink)
 	}
 
+	// encode data and write data to sink
 	enc := codec.NewEncoder(sink, &codec.MsgpackHandle{})
 	if err := enc.Encode(snap.logs[:snap.maxIdx]); err != nil {
+		log.Panicln(err)
+
 		sink.Cancel()
 		return err
 	}
 
-	sink.Close()
+	// close the sink
+	if err := sink.Close(); err != nil {
+		log.Println(err)
+		return err
+	}
+
 	return nil
 }
 

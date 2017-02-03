@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	debug  bool
-	peer   string
-	writer bool
+	debug   bool
+	peer    string
+	writer  bool
+	baseDir string
 
 	node *raft.Raft
 )
@@ -23,6 +24,7 @@ func init() {
 	flag.BoolVar(&debug, "d", false, "debug")
 	flag.StringVar(&peer, "peers", "", "peers comma separated host:port")
 	flag.BoolVar(&writer, "w", false, "this raft writes data")
+	flag.StringVar(&baseDir, "base", "/tmp/raftd", "raft log dir")
 	flag.Parse()
 
 	if len(peer) < 1 {
@@ -31,8 +33,8 @@ func init() {
 }
 
 func main() {
-	node = MakeRaft()
-	log.Println("raft made, debug=%v peers=%s w=%v", debug, peer, writer)
+	node = MakeRaft(baseDir)
+	log.Printf("raft made, debug=%v peers=%s w=%v", debug, peer, writer)
 	future := node.SetPeers(strings.Split(peer, ","))
 	if err := future.Error(); err != nil {
 		panic(err)
