@@ -49,6 +49,8 @@ func (s *logStore) StoreLog(log *raft.Log) error {
 
 // StoreLogs implements the LogStore interface.
 func (s *logStore) StoreLogs(logs []*raft.Log) error {
+	glog.Println(len(logs))
+
 	s.Lock()
 	defer s.Unlock()
 
