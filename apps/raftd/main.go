@@ -32,21 +32,26 @@ func init() {
 
 func main() {
 	node = MakeRaft()
+	log.Println("raft made")
 	future := node.SetPeers(strings.Split(peer, ","))
 	if err := future.Error(); err != nil {
 		panic(err)
 	}
+
+	log.Println("raft set peers done")
 
 	go func() {
 		ticker := time.NewTicker(time.Second * 30)
 		defer ticker.Stop()
 
 		for range ticker.C {
-			log.Printf("[%s] state:%+v stats:%+v", node, node.State(), node.Stats())
+			log.Printf("[%s] stats:%+v", node, node.Stats())
 		}
 	}()
 
 	defer node.Shutdown()
+
+	log.Println("enter main loop")
 
 	if writer {
 		log.SetOutput(os.Stdout)
@@ -55,17 +60,5 @@ func main() {
 		stress.RunStress(benchAppend)
 	} else {
 		select {}
-	}
-}
-
-func benchAppend(seq int) {
-	cmd := []byte("hello world")
-	for i := 0; i < 1000; i++ {
-		future := node.Apply(cmd, time.Second)
-		if future.Error() == nil {
-			stress.IncCounter("ok", 1)
-		} else {
-			stress.IncCounter("no", 1)
-		}
 	}
 }

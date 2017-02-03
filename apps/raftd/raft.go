@@ -28,6 +28,7 @@ func MakeRaft() *raft.Raft {
 	log.Printf("Starting node at %v", trans.LocalAddr())
 
 	conf := raft.DefaultConfig()
+	conf.SnapshotInterval = time.Minute
 	conf.EnableSingleNode = false
 	conf.Logger = log.New(os.Stdout, "", log.LstdFlags)
 	node, err := raft.NewRaft(conf, &MockFSM{}, stableStore, stableStore, snapshotStore, peerStore, trans)
