@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
 
+	"github.com/funkygao/gafka/ctx"
 	"github.com/hashicorp/raft"
 )
 
@@ -16,7 +18,9 @@ func MakeRaft() *raft.Raft {
 		panic(err)
 	}
 
-	trans, err := raft.NewTCPTransport(":10114", nil, 2, time.Second, os.Stdout)
+	ip, _ := ctx.LocalIP()
+
+	trans, err := raft.NewTCPTransport(fmt.Sprintf("%s:10114", ip.String()), nil, 2, time.Second, os.Stdout)
 	if err != nil {
 		panic(err)
 	}
