@@ -3,6 +3,7 @@ package main
 import (
 	glog "log"
 	"sync"
+	"time"
 
 	"github.com/hashicorp/raft"
 )
@@ -36,6 +37,7 @@ func (s *logStore) LastIndex() (uint64, error) {
 // GetLog implements the LogStore interface.
 func (s *logStore) GetLog(index uint64, log *raft.Log) error {
 	glog.Printf("GetLog %d", index)
+	time.Sleep(time.Millisecond * 10)
 	return nil
 }
 
@@ -50,7 +52,7 @@ func (s *logStore) StoreLogs(logs []*raft.Log) error {
 	defer s.Unlock()
 
 	for _, l := range logs {
-		glog.Printf("StoreLogs %+v", l)
+		glog.Printf("StoreLogs {idx:%d, term:%d, type:%d, data:%s}", l.Index, l.Term, l.Type, string(l.Data))
 
 		if s.firstIndex == 0 {
 			s.firstIndex = l.Index
