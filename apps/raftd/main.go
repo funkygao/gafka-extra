@@ -32,7 +32,7 @@ func init() {
 
 func main() {
 	node = MakeRaft()
-	log.Println("raft made")
+	log.Println("raft made, debug=%v peers=%s w=%v", debug, peer, writer)
 	future := node.SetPeers(strings.Split(peer, ","))
 	if err := future.Error(); err != nil {
 		panic(err)
